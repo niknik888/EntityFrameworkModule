@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using EntityFramework.Entities;
 using System.ComponentModel.DataAnnotations;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EntityFramework
 {
@@ -9,40 +10,47 @@ namespace EntityFramework
     {
         public static void Main(string[] args)
         {
+            
+                // Создаем контекст для добавления данных
+                using (var db = new AppContext())
+                {
+                    // Пересоздаем базу
+                    db.Database.EnsureDeleted();
+                    db.Database.EnsureCreated();
 
-            using (var db = new AppContext())
-            {
-                var user1 = new UserEntity { Name = "Arthur", Role = "Admin", Email = "" };
-                var user2 = new UserEntity { Name = "Klim", Role = "User", Email = "" };
-                var user3 = new UserEntity { Name = "Alice", Role = "User", Email = "" };
-                var user4 = new UserEntity { Name = "Bob", Role = "User", Email = "" };
-                var user5 = new UserEntity { Name = "Bruce", Role = "User" , Email = "" };
+                    // Заполняем данными
+                    var company1 = new CompanyEntity { Name = "SF" };
+                    var company2 = new CompanyEntity { Name = "VK" };
+                    var company3 = new CompanyEntity { Name = "FB" };
+                    db.Companies.AddRange(company1, company2, company3);
 
-                /*
-                db.Users.Add(user1);
-                db.Users.Add(user2);
-                db.Users.Add(user3);
-                db.Users.Add(user4);
-                db.SaveChanges();
-                */
+                    var user1 = new UserEntity { Name = "Arthur", Role = "Admin", Company = company1 };
+                    var user2 = new UserEntity { Name = "Bob", Role = "Admin", Company = company2 };
+                    var user3 = new UserEntity { Name = "Clark", Role = "User", Company = company2 };
+                    var user4 = new UserEntity { Name = "Dan", Role = "User", Company = company3 };
 
+                    db.Users.AddRange(user1, user2, user3, user4);
 
-                // Выбор всех пользователей
-                var allUsersd = db.Users.ToList();
-                
+                    db.SaveChanges();
+                }
 
-                // Выбор пользователей с ролью "Admin"
-                var admins = db.Users.Where(user => user.Role == "Admin").ToList();
+                // Создаем контекст для выбора данных
+                using (var db = new AppContext())
+                {
+                var usersQuery =
+                    from user in db.Users.Include(u => u.Company)
+                    where user.CompanyId == 2
+                    select user;
 
-                // Выбор первого пользователя в таблице
-                var firstUser = db.Users.FirstOrDefault();
-                
-                firstUser.Email = "simpleemail@gmail.com";
-                db.SaveChanges();
+                var users = usersQuery.ToList();
 
-
-                Console.Read();
-            }
+                    foreach (var user in users)
+                    {
+                        // Вывод Id пользователей
+                        Console.WriteLine(user.Id);
+                    }
+                }
+            
 
         }
     }

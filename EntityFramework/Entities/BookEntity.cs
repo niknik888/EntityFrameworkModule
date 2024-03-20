@@ -10,6 +10,10 @@ namespace EntityFramework.Entities
     {
         public int Id { get; set; }
         public string BookName { get; set; }
-        public string ReleaseYear { get; set; }
+        public int ReleaseYear { get; set; }
+        public string Author { get; set; }
+        public string Style { get; set; }
+
+        public UserEntity Reader { get; set; }
     }
 }

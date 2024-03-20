@@ -1,5 +1,6 @@
 ﻿using EntityFramework.Entities;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EntityFramework
 {
@@ -8,13 +9,13 @@ namespace EntityFramework
         // Объекты таблицы Users
         public DbSet<UserEntity> Users { get; set; }
 
-        // Объекты таблицы Users
+        // Объекты таблицы Books
         public DbSet<BookEntity> Books { get; set; }
 
-        public AppContext()
-        {
-            Database.EnsureCreated();
-        }
+
+        // Объекты таблицы Companies
+        public DbSet<CompanyEntity> Companies { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
